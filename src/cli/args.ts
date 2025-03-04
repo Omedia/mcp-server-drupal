@@ -22,7 +22,7 @@ function setup() {
 
   if (flags.version) {
     console.log(
-      VERSION_FRAME(flags["build-app-version"]!, flags["build-sdk-version"]!),
+      VERSION_FRAME(flags["build-app-version"]!, flags["build-sdk-version"]!)
     );
     Deno.exit(0);
   }

@@ -9,12 +9,15 @@ import {
   ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { Formatter } from "./cli/format.ts";
+import { Auth } from "./drupal/auth.ts";
 
 if (import.meta.main) {
   setup();
+  Auth.validate();
 
   const transport = new StdioServerTransport();
-  const client = createDrupalProxy(flags["drupal-url"]!);
+  const auth = Auth.isEnabled() ? Auth.header() : undefined;
+  const client = createDrupalProxy(flags["drupal-url"]!, auth);
   const instruments = await preflight(client);
 
   for (const { data, key, schema } of instruments) {

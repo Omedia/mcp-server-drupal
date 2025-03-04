@@ -12,11 +12,9 @@ ${bold(yellow("Drupal Module:"))}  https://www.drupal.org/project/mcp
 ${bold(yellow("Docs:"))}           https://mcp-77a54f.pages.drupalcode.org
 `;
 
-const DRUPAL_URL_REQUIRED = Formatter.error(`${
-  cyan(
-    "--drupal-url",
-  )
-} is required, please provide the URL of the Drupal instance
+const DRUPAL_URL_REQUIRED = Formatter.error(`${cyan(
+  "--drupal-url"
+)} is required, please provide the URL of the Drupal instance
 `);
 
 const VERSION_FRAME = (core: string, sdk: string) => `
@@ -24,4 +22,24 @@ MCP Server: ${yellow(core)}
 MCP SDK:    ${yellow(sdk)}
 `;
 
-export { DRUPAL_URL_REQUIRED, HELP_MESSAGE, VERSION_FRAME };
+const AUTH_MESSAGES = {
+  PREVENT_BOTH: Formatter.warning(
+    `Both ${cyan("DRUPAL_AUTH_TOKEN")} and ${cyan(
+      "DRUPAL_AUTH_USER"
+    )} with ${cyan("DRUPAL_AUTH_PASSWORD")} are set. ${bold(
+      yellow("Using token over user and pass.")
+    )}`
+  ),
+  MISSING_PASSWORD: Formatter.error(
+    `${cyan("DRUPAL_AUTH_PASSWORD")} is required when ${cyan(
+      "DRUPAL_AUTH_USER"
+    )} is set`
+  ),
+  MISSING_USERNAME: Formatter.error(
+    `${cyan("DRUPAL_AUTH_USER")} is required when ${cyan(
+      "DRUPAL_AUTH_PASS"
+    )} is set`
+  ),
+};
+
+export { DRUPAL_URL_REQUIRED, HELP_MESSAGE, AUTH_MESSAGES, VERSION_FRAME };

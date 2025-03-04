@@ -1,4 +1,4 @@
-import { bold, green, red } from "@std/fmt/colors";
+import { bold, green, red, yellow } from "@std/fmt/colors";
 
 const Formatter = {
   error(err: unknown) {
@@ -7,6 +7,7 @@ const Formatter = {
   info(msg: string) {
     return `\n${bold(green("INFO:"))} ${msg}`;
   },
+  warning: (msg: string) => `\n${bold(yellow("WARNING:"))} ${msg}`,
 };
 
 export { Formatter };

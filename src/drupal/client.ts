@@ -3,8 +3,8 @@ import {
   ResourceTemplate,
   Tool,
 } from "@modelcontextprotocol/sdk/types.ts";
-import { Formatter } from "../cli/format.ts";
 import { composeMCPEndpoint } from "./helpers.ts";
+import { createJSONRPCClient } from "./json_rpc.ts";
 
 enum MCPMethods {
   TOOLS = "tools/list",
@@ -14,73 +14,40 @@ enum MCPMethods {
   READ = "resources/read",
 }
 
-type JRPCResponse<K extends string, T> = {
-  jsonrpc: string;
-  id: string;
-  result: {
-    [key in K]: T;
-  };
-};
-
 export type DrupalProxy = ReturnType<typeof createDrupalProxy>;
 
-function createDrupalProxy(base: string) {
+function createDrupalProxy(base: string, auth?: string) {
   const url = composeMCPEndpoint(base);
+  const call = createJSONRPCClient(url, auth);
 
   return {
     async tools(): Promise<Tool[]> {
-      const data = await jrpc<"tools", Tool[]>(url, MCPMethods.TOOLS);
+      const data = await call<"tools", Tool[]>(MCPMethods.TOOLS);
       return data.result.tools;
     },
     async resources(): Promise<Resource[]> {
-      const data = await jrpc<"resources", Resource[]>(
-        url,
-        MCPMethods.RESOURCES,
-      );
+      const data = await call<"resources", Resource[]>(MCPMethods.RESOURCES);
 
       return data.result.resources;
     },
     async templates(): Promise<ResourceTemplate[]> {
-      const data = await jrpc<"resourceTemplates", ResourceTemplate[]>(
-        url,
-        MCPMethods.TEMPLATES,
+      const data = await call<"resourceTemplates", ResourceTemplate[]>(
+        MCPMethods.TEMPLATES
       );
       return data.result.resourceTemplates;
     },
     async call(name: string, args?: Record<string, unknown>) {
-      const data = await jrpc<"_", unknown>(url, MCPMethods.CALL, {
+      const data = await call<"_", unknown>(MCPMethods.CALL, {
         name,
         arguments: args,
       });
       return data.result;
     },
     async read(params: Record<string, unknown>) {
-      const data = await jrpc<"_", unknown>(url, MCPMethods.READ, params);
+      const data = await call<"_", unknown>(MCPMethods.READ, params);
       return data.result;
     },
   };
-}
-
-function jrpc<K extends string, T>(
-  url: string,
-  method: MCPMethods,
-  params?: Record<string, unknown>,
-): Promise<JRPCResponse<K, T>> {
-  const request = new Request(url, {
-    method: "POST",
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-      method,
-      params: params,
-    }),
-  });
-
-  return fetch(request)
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error(Formatter.error(error));
-    });
 }
 
 export { createDrupalProxy };
