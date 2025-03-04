@@ -52,6 +52,53 @@ mcp-server-drupal --version
 mcp-server-drupal --help
 ```
 
+## Authentication
+
+The server supports both authentication via environment variables. You can use either a auth token or a basic auth with username and password combination . The following environment variables are supported:
+
+- `DRUPAL_AUTH_TOKEN`: The authentication token.
+- `DRUPAL_AUTH_USER`: The username for authentication.
+- `DRUPAL_AUTH_PASSWORD`: The password for authentication.
+
+> [!NOTE]
+> Make sure to turn the authentication on the Drupal MCP module settings page.
+
+> [!NOTE]
+> If both `DRUPAL_AUTH_TOKEN` and `DRUPAL_AUTH_USER`/`DRUPAL_AUTH_PASSWORD` are set, the token will be used over the username and password.
+
+Example usage with token:
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "__BINARY_PATH__",
+      "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
+      "env": {
+        "DRUPAL_AUTH_TOKEN": "<AUTH_TOKEN>"
+      }
+    }
+  }
+}
+```
+
+Example usage with username and password:
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "__BINARY_PATH__",
+      "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
+      "env": {
+        "DRUPAL_AUTH_USER": "<BASIC_AUTH_USERNAME>",
+        "DRUPAL_AUTH_PASSWORD": "<BASIC_AUTH_PASSWORD>"
+      }
+    }
+  }
+}
+```
+
 ## MCP
 
 - All instruments are defined by the Drupal API during the initialization phase
