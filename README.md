@@ -52,6 +52,32 @@ mcp-server-drupal --version
 mcp-server-drupal --help
 ```
 
+### Alternative usage
+
+The server is also available as a deno module on [JSR](https://jsr.io/@omedia/mcp-server-drupal) so you can use via `npx`
+
+```bash
+
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "deno",
+        "run",
+        "-A",
+        "jsr:@omedia/mcp-server-drupal@<VERSION>",
+        "--drupal-url",
+        "__DRUPAL_BASE_URL__"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+
 ## Authentication
 
 The server supports both authentication via environment variables. You can use either a auth token or a basic auth with username and password combination . The following environment variables are supported:
