@@ -52,6 +52,56 @@ mcp-server-drupal --version
 mcp-server-drupal --help
 ```
 
+## Docker
+
+The server is available as docker [image](https://github.com/Omedia/mcp-server-drupal/pkgs/container/mcp-server-drupal) on GHCR.
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/omedia/mcp-server-drupal",
+        "--drupal-url=__DRUPAL_BASE_URL_"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+Specific version of the images are also avaiable.
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DRUPAL_AUTH_TOKEN",
+        "ghcr.io/omedia/mcp-server-drupal:1.0.0-alpha5",
+        "--drupal-url=__DRUPAL_BASE_URL__"
+      ],
+      "env": {
+        "DRUPAL_AUTH_TOKEN": "THEPASSWORD"
+      }
+    }
+  }
+}
+```
+
+#### Development Phase
+
+If you are using the server in development phase and you have `ddev`, `lando` or simple `docker compose` keep in mind to run the server in the same network as the Drupal site using `--network` or `-n` flags. You can also achive the same with `host.docker.iternal`
+
 ### Alternative usage
 
 The server is also available as a deno module on [JSR](https://jsr.io/@omedia/mcp-server-drupal) so you can use via `npx`
@@ -76,7 +126,6 @@ The server is also available as a deno module on [JSR](https://jsr.io/@omedia/mc
   }
 }
 ```
-
 
 ## Authentication
 
@@ -119,6 +168,32 @@ Example usage with username and password:
       "env": {
         "DRUPAL_AUTH_USER": "<BASIC_AUTH_USERNAME>",
         "DRUPAL_AUTH_PASSWORD": "<BASIC_AUTH_PASSWORD>"
+      }
+    }
+  }
+}
+```
+
+#### Docker
+
+If you want to use the auth with docker do not forget to pass them as envriment variables
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-drupal": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DRUPAL_AUTH_TOKEN",
+        "ghcr.io/omedia/mcp-server-drupal",
+        "--drupal-url=__DRUPAL_BASE_URL__"
+      ],
+      "env": {
+        "DRUPAL_AUTH_TOKEN": "<AUTH_TOKEN>"
       }
     }
   }
