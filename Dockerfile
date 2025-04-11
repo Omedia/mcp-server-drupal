@@ -6,6 +6,9 @@ LABEL org.opencontainers.image.licenses=MIT
 
 WORKDIR /app
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 COPY deno.jsonc deno.lock ./
 COPY src ./src
 
@@ -13,4 +16,4 @@ USER deno
 
 RUN deno cache src/mod.ts
 
-ENTRYPOINT ["deno", "run", "--allow-net", "--allow-read","--allow-env" ,"src/mod.ts"]
+ENTRYPOINT ["/entrypoint.sh"]
