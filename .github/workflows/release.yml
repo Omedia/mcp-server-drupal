@@ -1,28 +1,39 @@
-name: Release
+name: release
+
 env:
   PACKAGE_NAME: "mcp-server-drupal"
   TARGET_LIST: "x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-pc-windows-msvc,x86_64-apple-darwin,aarch64-apple-darwin"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: omedia/mcp-server-drupal
+
 on:
   push:
     tags:
       - "v*.*.*"
+
 permissions:
   contents: write
   id-token: write
+  packages: write
+
 jobs:
-  build-and-sign:
+  binary:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
           deno-version: "2.x"
+
       - name: Extract version from tag
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
       - name: Setup cosign
         uses: sigstore/cosign-installer@v3.7.0
+
       - name: Build the binaries
         run: |
           for target in $(echo $TARGET_LIST | tr "," "\n")
@@ -47,6 +58,7 @@ jobs:
 
             deno task build --target=$target --output=./build/$binary_name
           done
+
       - name: Sign binaries
         run: |
           mkdir -p build/bundles
@@ -60,9 +72,63 @@ jobs:
           cd build/bundles
           tar -czf ../signatures.tar.gz *
           cd ../..
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             build/*
           name: "MCP Server Drupal: ${{ env.VERSION }}"
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.source=https://github.com/omedia/mcp-server-drupal
+            org.opencontainers.image.description=MCP Server for Drupal
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.created={{date 'iso8601'}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Sign the images with Cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Sign container image
+        run: |
+          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

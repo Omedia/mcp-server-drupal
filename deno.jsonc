@@ -1,6 +1,6 @@
 {
   "name": "@omedia/mcp-server-drupal",
-  "version": "1.0.0-alpha5",
+  "version": "1.0.0",
   "license": "MIT",
   "exports": "./src/mod.ts",
   "tasks": {
