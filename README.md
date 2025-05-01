@@ -2,59 +2,20 @@
 
 ![image](https://github.com/user-attachments/assets/3fc18e9b-acd6-4490-8f43-504d812354dc)
 
-This is a typescript based companion
-[Model Context Protocol(MCP)](https://modelcontextprotocol.io/introduction)
-server for the [Drupal MCP module](https://www.drupal.org/project/mcp) that
-works with the `STDIO` transport. In order to use `SSE` transport this server is
-not required.
+This is a typescript based companion [Model Context Protocol(MCP)](https://modelcontextprotocol.io/introduction) server for the [Drupal MCP module](https://www.drupal.org/project/mcp) that works with the `STDIO` transport. In order to use `SSE` transport this server is not required.
 
 > [!IMPORTANT]
-> Both the Drupal module and this server are in active development. Use them at
-> your own risk.
+> 📖 Detailed docs are avilable at [drupalmcp.io](https://drupalmcp.io/en)
 
-## Installation and Usage
+## Installation
 
-- Download the binary for your system from the
-  [releases](https://github.com/Omedia/mcp-server-drupal/releases) page
+The STDIO Binary is available through multiple distribution channels to accommodate various environments:
 
-- To use it with [Claude Desktop](https://claude.ai/download) you need to add
-  the server config in the `claude_desktop_config.json` file. The file is
-  located at the following path:
+- [Docker container](https://github.com/Omedia/mcp-server-drupal/pkgs/container/mcp-server-drupal)
+- [Compiled binary](https://github.com/Omedia/mcp-server-drupal/releases)
+- [JSR package](https://jsr.io/@omedia/mcp-server-drupal)
 
-  - On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-  - On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-
-  ```json
-  {
-    "mcpServers": {
-      "mcp-server-drupal": {
-        "command": "__BINARY_PATH__",
-        "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
-        "env": {}
-      }
-    }
-  }
-  ```
-
-  - `--drupal-url` is a required argument
-  - Replace `__BINARY_PATH__` with the path to the downloaded binary
-  - Replace `__DRUPAL_BASE_URL__` with the base URL of your Drupal site
-
-- To check the server and sdk version run the following command:
-
-```bash
-mcp-server-drupal --version
-```
-
-- To check the available commands run the following command:
-
-```bash
-mcp-server-drupal --help
-```
-
-## Docker
-
-The server is available as docker [image](https://github.com/Omedia/mcp-server-drupal/pkgs/container/mcp-server-drupal) on GHCR.
+Here is a quick example of how to use the server with `docker`:
 
 ```json
 {
@@ -74,58 +35,7 @@ The server is available as docker [image](https://github.com/Omedia/mcp-server-d
 }
 ```
 
-Specific version of the images are also avaiable.
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "DRUPAL_AUTH_TOKEN",
-        "ghcr.io/omedia/mcp-server-drupal:1.0.0-alpha5",
-        "--drupal-url=__DRUPAL_BASE_URL__"
-      ],
-      "env": {
-        "DRUPAL_AUTH_TOKEN": "THEPASSWORD"
-      }
-    }
-  }
-}
-```
-
-#### Development Phase
-
-If you are using the server in development phase and you have `ddev`, `lando` or simple `docker compose` keep in mind to run the server in the same network as the Drupal site using `--network` or `-n` flags. You can also achive the same with `host.docker.iternal`
-
-### Alternative usage
-
-The server is also available as a deno module on [JSR](https://jsr.io/@omedia/mcp-server-drupal) so you can use via `npx`
-
-```bash
-
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "deno",
-        "run",
-        "-A",
-        "jsr:@omedia/mcp-server-drupal@<VERSION>",
-        "--drupal-url",
-        "__DRUPAL_BASE_URL__"
-      ],
-      "env": {}
-    }
-  }
-}
-```
+📖 For more details check the [Installation](http://drupalmcp.io/en/mcp-server/stdio-transport/#installation) section in the docs
 
 ## Authentication
 
@@ -141,64 +51,7 @@ The server supports both authentication via environment variables. You can use e
 > [!NOTE]
 > If both `DRUPAL_AUTH_TOKEN` and `DRUPAL_AUTH_USER`/`DRUPAL_AUTH_PASSWORD` are set, the token will be used over the username and password.
 
-Example usage with token:
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "__BINARY_PATH__",
-      "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
-      "env": {
-        "DRUPAL_AUTH_TOKEN": "<AUTH_TOKEN>"
-      }
-    }
-  }
-}
-```
-
-Example usage with username and password:
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "__BINARY_PATH__",
-      "args": ["--drupal-url", "__DRUPAL_BASE_URL__"],
-      "env": {
-        "DRUPAL_AUTH_USER": "<BASIC_AUTH_USERNAME>",
-        "DRUPAL_AUTH_PASSWORD": "<BASIC_AUTH_PASSWORD>"
-      }
-    }
-  }
-}
-```
-
-#### Docker
-
-If you want to use the auth with docker do not forget to pass them as envriment variables
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-drupal": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "DRUPAL_AUTH_TOKEN",
-        "ghcr.io/omedia/mcp-server-drupal",
-        "--drupal-url=__DRUPAL_BASE_URL__"
-      ],
-      "env": {
-        "DRUPAL_AUTH_TOKEN": "<AUTH_TOKEN>"
-      }
-    }
-  }
-}
-```
+📖 Check the [Authentication](http://drupalmcp.io/en/mcp-server/stdio-transport/#authentication) section in the docs for more details
 
 ## MCP
 
@@ -252,9 +105,11 @@ available as a deno task:
 deno task inspector --drupal-url [DRUPAL_BASE_URL]
 ```
 
-## Verifying the binaries
+## Verifying the binaries and images
 
-`drupal_mcp_server` binaries are signed by [cosign](https://github.com/sigstore/cosign) using identity-based signing. You can verify your binary by downloading the `signatures.tar.gz` file from the release page, extracting the signature and running the following command:
+`drupal_mcp_server` binaries and container images are signed by [cosign](https://github.com/sigstore/cosign) using identity-based signing.
+
+You can verify your binary by downloading the `signatures.tar.gz` file from the release page, extracting the signature and running the following command:
 
 ```bash
 cosign verify-blob ${YOUR_BINARY_NAME} \
@@ -262,4 +117,12 @@ cosign verify-blob ${YOUR_BINARY_NAME} \
 --certificate-oidc-issuer https://token.actions.githubusercontent.com \
 --certificate-identity-regexp https://github.com/Omedia/mcp-server-drupal/.github/workflows/release.yml@refs/tags/v \
 --certificate-github-workflow-repository Omedia/mcp-server-drupal
+```
+
+On the container side you can verify the image by running the following command:
+
+```bash
+cosign verify ghcr.io/omedia/mcp-server-drupal:latest \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  --certificate-identity-regexp "https://github.com/Omedia/mcp-server-drupal/.github/workflows/release.yml@refs/tags/v"
 ```
