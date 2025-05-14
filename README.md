@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/omedia-mcp-server-drupal-badge.png)](https://mseep.ai/app/omedia-mcp-server-drupal)
+
 # MCP Server for Drupal
 
 ![image](https://github.com/user-attachments/assets/3fc18e9b-acd6-4490-8f43-504d812354dc)
